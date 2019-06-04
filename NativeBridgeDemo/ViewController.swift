@@ -69,17 +69,34 @@ class Handler : NSObject, WKURLSchemeHandler  {
     
     func proxyRequest(urlSchemeTask: WKURLSchemeTask) {
         
+        // The incoming request is for proxy://whatever, let's rewrite it
+        // to be an https:// URL.
+        
+        /// TODO: a production version of this would also rewrite the HTTP headers
+        /// for referrer, origin, etc to also be https://
+        
         var req = urlSchemeTask.request
         var urlComponents = URLComponents(url: req.url!, resolvingAgainstBaseURL: true)!
         urlComponents.scheme = "https"
         req.url = urlComponents.url!
         
+        /// TODO: a production version of this wouldn't download the entire response before
+        /// sending it to the webview. Imagine we're downloading a multi-MB video - it should
+        /// be passed through as data arrives (you can call urlSchemeTask.didReceive(Data)
+        /// as many times as you want), perhaps through a URLSessionDataDelegate
         
         URLSession.shared.dataTask(with: req) { (data, response, error) in
             if let err = error {
               return urlSchemeTask.didFailWithError(err)
             }
-            // we know response and data exist for the purposes of this demo
+            
+            /// TODO: this response URL needs to be rewritten back to proxy://. For the purposes
+            /// of this demo it works, but any subsequent resource loads (CSS, JS, etc)
+            /// will go straight to https:// when we want them to go to proxy://
+            
+            // we know response and data exist for the purposes of this demo so just using !
+            // everywhere
+            
             urlSchemeTask.didReceive(response!)
             urlSchemeTask.didReceive(data!)
             urlSchemeTask.didFinish()
@@ -87,8 +104,10 @@ class Handler : NSObject, WKURLSchemeHandler  {
     }
     
     func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
-        // we'd handle intercepting currently running tasks if we were doing
-        // this for real
+        /// TODO: a production version of this would halt ongoing downloads when the webview
+        /// requests it. Again, imagine the multi-MB video. If the user stops the video the
+        /// webview will cancel the in-progress download. So we'd need to keep track of
+        /// active WKURLSchemeTasks and their corresponding URLSessionDataTasks
     }
     
     

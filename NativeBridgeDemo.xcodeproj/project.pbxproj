@@ -11,6 +11,8 @@
 		D344E06E22A59DAF006BD033 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D344E06D22A59DAF006BD033 /* ViewController.swift */; };
 		D344E07322A59DB3006BD033 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D344E07222A59DB3006BD033 /* Assets.xcassets */; };
 		D344E07622A59DB3006BD033 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D344E07422A59DB3006BD033 /* LaunchScreen.storyboard */; };
+		D3E1561722AAC310005777F4 /* EventFeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E1561622AAC310005777F4 /* EventFeed.swift */; };
+		D3E1561922AAD6ED005777F4 /* CommandBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E1561822AAD6ED005777F4 /* CommandBridge.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +22,8 @@
 		D344E07222A59DB3006BD033 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		D344E07522A59DB3006BD033 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		D344E07722A59DB3006BD033 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D3E1561622AAC310005777F4 /* EventFeed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventFeed.swift; sourceTree = "<group>"; };
+		D3E1561822AAD6ED005777F4 /* CommandBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandBridge.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +61,8 @@
 				D344E07222A59DB3006BD033 /* Assets.xcassets */,
 				D344E07422A59DB3006BD033 /* LaunchScreen.storyboard */,
 				D344E07722A59DB3006BD033 /* Info.plist */,
+				D3E1561622AAC310005777F4 /* EventFeed.swift */,
+				D3E1561822AAD6ED005777F4 /* CommandBridge.swift */,
 			);
 			path = NativeBridgeDemo;
 			sourceTree = "<group>";
@@ -132,6 +138,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				D344E06E22A59DAF006BD033 /* ViewController.swift in Sources */,
+				D3E1561722AAC310005777F4 /* EventFeed.swift in Sources */,
+				D3E1561922AAD6ED005777F4 /* CommandBridge.swift in Sources */,
 				D344E06C22A59DAF006BD033 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

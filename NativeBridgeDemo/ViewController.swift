@@ -12,11 +12,13 @@ import WebKit
 class ViewController: UIViewController {
     
     let webview:WKWebView
+    let handler:Handler
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         let config = WKWebViewConfiguration()
-        config.setURLSchemeHandler(Handler(), forURLScheme: "proxy")
-        self.webview = WKWebView(frame: CGRect(x: 0, y: 0, width: 200, height: 200), configuration: config)
+        self.handler = Handler(config)
+    
+        self.webview = WKWebView(frame: CGRect(x: 0, y: 0, width: 0, height: 0), configuration: config)
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         self.view = self.webview
         self.webview.load(URLRequest(url: URL(string: "proxy://alike-quicksand.glitch.me/")!))
@@ -28,16 +30,45 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Do any additional setup after loading the view.
     }
-
-
 }
 
-class CommandNotFoundError : Error {}
+
+/// This is the format the webview will send into our command handler
+struct ExampleInput : Decodable {
+    let exampleNumber: Int
+}
+
+/// This is the format we'll send back
+struct ExampleResult : Encodable {
+    let resultNumber : Int
+}
 
 class Handler : NSObject, WKURLSchemeHandler  {
+    
+    var feed: EventFeed? = nil
+    var timer: Timer? = nil
+    let commandBridge = CommandBridge()
+    
+    init(_ config: WKWebViewConfiguration) {
+        super.init()
+        
+        commandBridge.registerCommand(name: "navigator.exampleNativeBridge.test") { (input: ExampleInput, callback) in
+            callback(
+                .success(
+                    ExampleResult(resultNumber: input.exampleNumber * 100)
+                )
+            )
+        }
+        
+        
+        config.setURLSchemeHandler(self, forURLScheme: "proxy")
+        config.userContentController.addUserScript(WKUserScript(source: EventFeed.jsCode, injectionTime: .atDocumentStart, forMainFrameOnly: false))
+        config.userContentController.addUserScript(WKUserScript(source: self.commandBridge.getJS(), injectionTime: .atDocumentStart, forMainFrameOnly: false))
+        
+
+    }
+    
     func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
         if urlSchemeTask.request.httpMethod == "NATIVECOMMAND" {
             return handleNativeCommand(urlSchemeTask: urlSchemeTask)
@@ -46,24 +77,19 @@ class Handler : NSObject, WKURLSchemeHandler  {
     }
     
     func handleNativeCommand(urlSchemeTask: WKURLSchemeTask) {
-        if urlSchemeTask.request.url?.path == "/navigator/exampleNativeBridge/test" {
+        
+        if urlSchemeTask.request.url?.path == "/feed" {
+            let feed = EventFeed(schemeTask: urlSchemeTask)
+            self.feed = feed
             
-            do {
-                let result = try JSONEncoder().encode([
-                    "exampleString": Date().description
-                ])
-                
-                urlSchemeTask.didReceive(HTTPURLResponse(url: urlSchemeTask.request.url!, statusCode: 200, httpVersion: nil, headerFields: [
-                    "content-type": "application/json"
-                    ])!)
-                urlSchemeTask.didReceive(result)
-                urlSchemeTask.didFinish()
-            } catch {
-                urlSchemeTask.didFailWithError(error)
+            // For our demo we'll dispatch an event every three seconds
+            self.timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { [weak self] _ in
+                try! self?.feed?.dispatch(eventName: "test-event", exampleString: Date().description)
             }
             
+            
         } else {
-            urlSchemeTask.didFailWithError(CommandNotFoundError())
+            self.commandBridge.handleCommand(schemeTask: urlSchemeTask)
         }
     }
     
@@ -108,6 +134,15 @@ class Handler : NSObject, WKURLSchemeHandler  {
         /// requests it. Again, imagine the multi-MB video. If the user stops the video the
         /// webview will cancel the in-progress download. So we'd need to keep track of
         /// active WKURLSchemeTasks and their corresponding URLSessionDataTasks
+        
+        // But we need to close the feed otherwise it WILL fail on reload, since it's
+        // an active connection.
+        
+        if urlSchemeTask.request.url?.path == "/feed" {
+            self.feed = nil
+            self.timer?.invalidate()
+            self.timer = nil
+        }
     }
     
     

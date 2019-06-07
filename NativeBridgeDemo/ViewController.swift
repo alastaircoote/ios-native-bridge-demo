@@ -12,11 +12,11 @@ import WebKit
 class ViewController: UIViewController {
     
     let webview:WKWebView
-    let handler:Handler
+    let handler:ExampleHandler
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         let config = WKWebViewConfiguration()
-        self.handler = Handler(config)
+        self.handler = ExampleHandler(config)
     
         self.webview = WKWebView(frame: CGRect(x: 0, y: 0, width: 0, height: 0), configuration: config)
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -44,14 +44,22 @@ struct ExampleResult : Encodable {
     let resultNumber : Int
 }
 
-class Handler : NSObject, WKURLSchemeHandler  {
+/// The example event we'll dispatch in the timer
+struct TestEvent: JSEvent {
+    let name = "test-event"
+    let attachedString: String
+}
+
+class ExampleHandler : NSObject, WKURLSchemeHandler  {
     
-    var feed: EventFeed? = nil
-    var timer: Timer? = nil
     let commandBridge = CommandBridge()
     
     init(_ config: WKWebViewConfiguration) {
         super.init()
+        
+        // Register our example command. All we're going to do is return whatever number
+        // the webview sent us multiplied by 100. Notice that we're specifying the input type,
+        // but can infer the result type by the way we use callback():
         
         commandBridge.registerCommand(name: "navigator.exampleNativeBridge.test") { (input: ExampleInput, callback) in
             callback(
@@ -62,31 +70,52 @@ class Handler : NSObject, WKURLSchemeHandler  {
         }
         
         
+        // intercept all requests sent to proxy://
         config.setURLSchemeHandler(self, forURLScheme: "proxy")
+        
+        // Add the code that'll fire the event feed request
         config.userContentController.addUserScript(WKUserScript(source: EventFeed.jsCode, injectionTime: .atDocumentStart, forMainFrameOnly: false))
+        
+        // Add the code that'll attach our custom events
         config.userContentController.addUserScript(WKUserScript(source: self.commandBridge.getJS(), injectionTime: .atDocumentStart, forMainFrameOnly: false))
         
 
     }
     
     func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
+        
+        // We use a special HTTP method to indicate when we're sending a native
+        // command request.
+        
         if urlSchemeTask.request.httpMethod == "NATIVECOMMAND" {
             return handleNativeCommand(urlSchemeTask: urlSchemeTask)
         }
+        
+        // Otherwise we're going to proxy to a remote URL (loading a local file
+        // isn't demoed here, but you can imagine how it would work)
+        
         return proxyRequest(urlSchemeTask: urlSchemeTask)
     }
+    
+    var feed: EventFeed? = nil
+    
+    // ignore this, just used for demo purposes:
+    var timer: Timer? = nil
     
     func handleNativeCommand(urlSchemeTask: WKURLSchemeTask) {
         
         if urlSchemeTask.request.url?.path == "/feed" {
+            
+            // this request is made by the EventFeed.jsCode execution, which
+            // streams the events we send it into JS events
+            
             let feed = EventFeed(schemeTask: urlSchemeTask)
             self.feed = feed
             
             // For our demo we'll dispatch an event every three seconds
             self.timer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { [weak self] _ in
-                try! self?.feed?.dispatch(eventName: "test-event", exampleString: Date().description)
+                try! self?.feed?.dispatch(event: TestEvent(attachedString: Date().description))
             }
-            
             
         } else {
             self.commandBridge.handleCommand(schemeTask: urlSchemeTask)
@@ -135,10 +164,13 @@ class Handler : NSObject, WKURLSchemeHandler  {
         /// webview will cancel the in-progress download. So we'd need to keep track of
         /// active WKURLSchemeTasks and their corresponding URLSessionDataTasks
         
-        // But we need to close the feed otherwise it WILL fail on reload, since it's
-        // an active connection.
+        /// Also, an ObjC exception is thrown if you try to send data into a task that's
+        /// already finished. So we need to make sure we know when one has been stopped.
+        
         
         if urlSchemeTask.request.url?.path == "/feed" {
+            // But we need to close the feed otherwise it WILL fail on reload, since it's
+            // an active connection.
             self.feed = nil
             self.timer?.invalidate()
             self.timer = nil

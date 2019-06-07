@@ -27,6 +27,9 @@ class Command<Input: Decodable, Output: Encodable> {
         self.handler = handler
     }
     
+    
+    /// Take the JSON input, convert it to our input type (or fail), run the handler
+    /// and either convert the output type to JSON or fail with the error provided
     func wrapper(urlSchemeTask: WKURLSchemeTask) {
         do {
             let input = try JSONDecoder().decode(Input.self, from: urlSchemeTask.request.httpBody!)
@@ -56,22 +59,37 @@ class CommandBridge {
     var commands: [String: CommandWrapper] = [:]
     
     func registerCommand<I:Decodable,O:Encodable>(name: String, _ command: @escaping Command<I,O>.Handler) {
+        
+        // This looks a little hacky but basically we're converting our generic
+        // handler closures into a uniform type that can be added to our commands
+        // dictionary
+        
         self.commands[name] = Command(command).wrapper
     }
     
     func handleCommand(schemeTask: WKURLSchemeTask) {
         
+        // get the command name
         let commandName = schemeTask.request.url!.query!
+        
         guard let handler = self.commands[commandName] else {
+            // no command with this name? Fail. Shouldn't ever get this
+            // because we're specifically adding functions to the webview,
+            // but still
             schemeTask.didFailWithError(CommandNotFoundError())
             return
         }
-                
+    
+        // run the actual handler code
         handler(schemeTask)
         
     }
     
     func getJS() -> String {
+        
+        // we pass the list of our commands into the JS to then process each
+        // of them and add them to existing objects/create new ones
+        
         let commands = try! JSONEncoder().encode(Array(self.commands.keys))
         let jsonString = String(data: commands, encoding: .utf8)!
         
@@ -95,8 +113,6 @@ class CommandBridge {
                 let split = cmd.split(".");
                 let funcName = split.pop();
                 let baseObject = window;
-        
-                console.log(split, funcName);
         
                 split.forEach(property => {
                     let newObject = baseObject[property];

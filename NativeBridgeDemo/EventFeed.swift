@@ -9,18 +9,26 @@
 import Foundation
 import WebKit
 
+protocol JSEvent : Encodable {
+    var name: String {get}
+}
+
 class EventFeed {
     let schemeTask:WKURLSchemeTask
     init(schemeTask: WKURLSchemeTask) {
         self.schemeTask = schemeTask
+        
+        // Send a dummy initial response back - there isn't really anything important
+        // in here, except that if we don't send a 200 response the browser might close it
         schemeTask.didReceive(HTTPURLResponse(url: schemeTask.request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!)
     }
     
-    func dispatch(eventName: String, exampleString: String) throws {
-        let json = try JSONEncoder().encode([
-            "event": eventName,
-            "data": exampleString
-        ])
+    func dispatch<EventType:JSEvent>(event: EventType) throws {
+        let json = try JSONEncoder().encode(event)
+        
+        // putting in \n\n because it's possible (though not documented) that WKWebView
+        // might conbine multiple didReceive() calls into one fetch body read. So on the
+        // JS side we split again by \n\n to make sure we're not missing anything.
         
         self.schemeTask.didReceive(json + "\n\n".data(using: .utf8)!)
     }
@@ -46,7 +54,11 @@ class EventFeed {
 
         separateCommands.forEach(cmd => {
           let json = JSON.parse(cmd);
-          let event = new Event(json.event);
+          let event = new Event(json.name);
+          Object.keys(json).forEach(key => {
+            if (key == "name") return;
+            event[key] = json[key];
+          });
           event.data = json.data;
           window.dispatchEvent(event);
         });

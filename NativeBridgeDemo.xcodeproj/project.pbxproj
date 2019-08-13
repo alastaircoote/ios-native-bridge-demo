@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D3196FAF2303289C0049D2C2 /* NativeBridgeDemoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3196FAE2303289C0049D2C2 /* NativeBridgeDemoTests.swift */; };
 		D344E06C22A59DAF006BD033 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D344E06B22A59DAF006BD033 /* AppDelegate.swift */; };
 		D344E06E22A59DAF006BD033 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D344E06D22A59DAF006BD033 /* ViewController.swift */; };
 		D344E07322A59DB3006BD033 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D344E07222A59DB3006BD033 /* Assets.xcassets */; };
@@ -15,7 +16,20 @@
 		D3E1561922AAD6ED005777F4 /* CommandBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3E1561822AAD6ED005777F4 /* CommandBridge.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		D3196FB12303289C0049D2C2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D344E06022A59DAF006BD033 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D344E06722A59DAF006BD033;
+			remoteInfo = NativeBridgeDemo;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		D3196FAC2303289C0049D2C2 /* NativeBridgeDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NativeBridgeDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D3196FAE2303289C0049D2C2 /* NativeBridgeDemoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeBridgeDemoTests.swift; sourceTree = "<group>"; };
+		D3196FB02303289C0049D2C2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D344E06822A59DAF006BD033 /* NativeBridgeDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NativeBridgeDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D344E06B22A59DAF006BD033 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		D344E06D22A59DAF006BD033 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -27,6 +41,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		D3196FA92303289C0049D2C2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D344E06522A59DAF006BD033 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -37,10 +58,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D3196FAD2303289C0049D2C2 /* NativeBridgeDemoTests */ = {
+			isa = PBXGroup;
+			children = (
+				D3196FAE2303289C0049D2C2 /* NativeBridgeDemoTests.swift */,
+				D3196FB02303289C0049D2C2 /* Info.plist */,
+			);
+			path = NativeBridgeDemoTests;
+			sourceTree = "<group>";
+		};
 		D344E05F22A59DAF006BD033 = {
 			isa = PBXGroup;
 			children = (
 				D344E06A22A59DAF006BD033 /* NativeBridgeDemo */,
+				D3196FAD2303289C0049D2C2 /* NativeBridgeDemoTests */,
 				D344E06922A59DAF006BD033 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -49,6 +80,7 @@
 			isa = PBXGroup;
 			children = (
 				D344E06822A59DAF006BD033 /* NativeBridgeDemo.app */,
+				D3196FAC2303289C0049D2C2 /* NativeBridgeDemoTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -70,6 +102,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		D3196FAB2303289C0049D2C2 /* NativeBridgeDemoTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D3196FB52303289C0049D2C2 /* Build configuration list for PBXNativeTarget "NativeBridgeDemoTests" */;
+			buildPhases = (
+				D3196FA82303289C0049D2C2 /* Sources */,
+				D3196FA92303289C0049D2C2 /* Frameworks */,
+				D3196FAA2303289C0049D2C2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D3196FB22303289C0049D2C2 /* PBXTargetDependency */,
+			);
+			name = NativeBridgeDemoTests;
+			productName = NativeBridgeDemoTests;
+			productReference = D3196FAC2303289C0049D2C2 /* NativeBridgeDemoTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		D344E06722A59DAF006BD033 /* NativeBridgeDemo */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D344E07A22A59DB3006BD033 /* Build configuration list for PBXNativeTarget "NativeBridgeDemo" */;
@@ -93,10 +143,14 @@
 		D344E06022A59DAF006BD033 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1020;
+				LastSwiftUpdateCheck = 1030;
 				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = alastair;
 				TargetAttributes = {
+					D3196FAB2303289C0049D2C2 = {
+						CreatedOnToolsVersion = 10.3;
+						TestTargetID = D344E06722A59DAF006BD033;
+					};
 					D344E06722A59DAF006BD033 = {
 						CreatedOnToolsVersion = 10.2.1;
 					};
@@ -116,11 +170,19 @@
 			projectRoot = "";
 			targets = (
 				D344E06722A59DAF006BD033 /* NativeBridgeDemo */,
+				D3196FAB2303289C0049D2C2 /* NativeBridgeDemoTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		D3196FAA2303289C0049D2C2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D344E06622A59DAF006BD033 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -133,6 +195,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		D3196FA82303289C0049D2C2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D3196FAF2303289C0049D2C2 /* NativeBridgeDemoTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D344E06422A59DAF006BD033 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -146,6 +216,14 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		D3196FB22303289C0049D2C2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D344E06722A59DAF006BD033 /* NativeBridgeDemo */;
+			targetProxy = D3196FB12303289C0049D2C2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin PBXVariantGroup section */
 		D344E07422A59DB3006BD033 /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
@@ -158,6 +236,48 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		D3196FB32303289C0049D2C2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = R2YTP5D988;
+				INFOPLIST_FILE = NativeBridgeDemoTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alastair.NativeBridgeDemoTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NativeBridgeDemo.app/NativeBridgeDemo";
+			};
+			name = Debug;
+		};
+		D3196FB42303289C0049D2C2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = R2YTP5D988;
+				INFOPLIST_FILE = NativeBridgeDemoTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.alastair.NativeBridgeDemoTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NativeBridgeDemo.app/NativeBridgeDemo";
+			};
+			name = Release;
+		};
 		D344E07822A59DB3006BD033 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -313,6 +433,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		D3196FB52303289C0049D2C2 /* Build configuration list for PBXNativeTarget "NativeBridgeDemoTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D3196FB32303289C0049D2C2 /* Debug */,
+				D3196FB42303289C0049D2C2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		D344E06322A59DAF006BD033 /* Build configuration list for PBXProject "NativeBridgeDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

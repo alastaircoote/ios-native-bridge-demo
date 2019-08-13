@@ -17,6 +17,7 @@ class ViewController: UIViewController {
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         let config = WKWebViewConfiguration()
         self.handler = ExampleHandler(config)
+        self.handler.injectJS( type: .scriptMessageAPI)
     
         self.webview = WKWebView(frame: CGRect(x: 0, y: 0, width: 0, height: 0), configuration: config)
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -50,24 +51,39 @@ struct TestEvent: JSEvent {
     let attachedString: String
 }
 
-class ExampleHandler : NSObject, WKURLSchemeHandler  {
+struct TestPayload : Codable {
+    let number: Int
+}
+
+enum BridgeType {
+    case httpAPI
+    case scriptMessageAPI
+}
+
+class ExampleHandler : NSObject, WKURLSchemeHandler, WKScriptMessageHandler  {
+    
     
     let commandBridge = CommandBridge()
+    let config: WKWebViewConfiguration
     
     init(_ config: WKWebViewConfiguration) {
+        self.config = config
         super.init()
         
         // Register our example command. All we're going to do is return whatever number
-        // the webview sent us multiplied by 100. Notice that we're specifying the input type,
+        // the webview sent us multiplied by 20. Notice that we're specifying the input type,
         // but can infer the result type by the way we use callback():
         
         commandBridge.registerCommand(name: "navigator.exampleNativeBridge.test") { (input: ExampleInput, callback) in
             callback(
                 .success(
-                    ExampleResult(resultNumber: input.exampleNumber * 100)
+                    ExampleResult(resultNumber: input.exampleNumber * 20)
                 )
             )
         }
+        
+        
+        config.userContentController.add(self, name: "bridge")
         
         
         // intercept all requests sent to proxy://
@@ -76,10 +92,18 @@ class ExampleHandler : NSObject, WKURLSchemeHandler  {
         // Add the code that'll fire the event feed request
         config.userContentController.addUserScript(WKUserScript(source: EventFeed.jsCode, injectionTime: .atDocumentStart, forMainFrameOnly: false))
         
-        // Add the code that'll attach our custom events
-        config.userContentController.addUserScript(WKUserScript(source: self.commandBridge.getJS(), injectionTime: .atDocumentStart, forMainFrameOnly: false))
+        
         
 
+    }
+    
+    func injectJS( type: BridgeType) {
+        // Add the code that'll attach our custom events
+        if type == .httpAPI {
+            config.userContentController.addUserScript(WKUserScript(source: self.commandBridge.getJSForHTTPAPI(), injectionTime: .atDocumentStart, forMainFrameOnly: false))
+        } else {
+            config.userContentController.addUserScript(WKUserScript(source: self.commandBridge.getJSForScriptMessageAPI(), injectionTime: .atDocumentStart, forMainFrameOnly: false))
+        }
     }
     
     func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
@@ -118,8 +142,12 @@ class ExampleHandler : NSObject, WKURLSchemeHandler  {
             }
             
         } else {
-            self.commandBridge.handleCommand(schemeTask: urlSchemeTask)
+            self.commandBridge.handleCommandBy(urlSchemeTask: urlSchemeTask)
         }
+    }
+    
+    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        self.commandBridge.handleCommandBy(scriptMessage: message)
     }
     
     func proxyRequest(urlSchemeTask: WKURLSchemeTask) {
